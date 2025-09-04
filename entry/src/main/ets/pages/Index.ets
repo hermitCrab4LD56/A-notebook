@@ -18,8 +18,10 @@ struct Index {
   
   // 最大化相关状态
   @State isMaximized: boolean = false; // 侧边栏是否最大化
-  @State maximizeHovered: boolean = false; // 最大化图标悬停状态
-  @State maximizePressed: boolean = false; // 最大化图标按下状态
+  
+  // 菜单相关状态
+  @State menuHovered: boolean = false; // 菜单图标悬停状态
+  @State menuPressed: boolean = false; // 菜单图标按下状态
   
   // 搜索结果
   @State searchResults: string[] = []; // 搜索结果列表
@@ -66,15 +68,33 @@ struct Index {
   @Builder
   SidebarHeader() {
     Row() {
-      // 菜单图标
-      Text('≡')
-        .fontSize(18)
-        .fontColor('#9CA3AF')
+      // 菜单图标容器
+      Row() {
+        Text('≡')
+          .fontSize(18)
+          .fontColor('#9CA3AF')
+      }
+      .width(32)
+      .height(32)
+      .justifyContent(FlexAlign.Center)
+      .backgroundColor(this.menuHovered || this.menuPressed ? '#4B5563' : Color.Transparent)
+      .borderRadius(4)
+      .onHover((isHover: boolean) => {
+        this.menuHovered = isHover;
+      })
+      .onTouch((event: TouchEvent) => {
+        if (event.type === TouchType.Down) {
+          this.menuPressed = true;
+        } else if (event.type === TouchType.Up) {
+          this.menuPressed = false;
+          this.toggleMaximize();
+        }
+      })
 
       // 搜索框 - 仅在搜索激活时显示
       if (this.isSearchActive) {
         TextInput({ placeholder: '搜索...', text: this.searchText })
-          .width(120)
+          .width(80)
           .height(32)
           .fontSize(14)
           .fontColor('#FFFFFF')
@@ -86,61 +106,34 @@ struct Index {
             this.searchText = value;
             this.performSearch(value);
           })
-          .margin({ left: 8, right: 8 })
+          .margin({ left: 4, right: 4 })
       } else {
         Blank()
       }
 
-      // 搜索和最大化图标
-      Row({ space: 8 }) {
-        // 搜索图标容器
-        Row() {
-          Image($r('app.media.search_icon'))
-            .width(18)
-            .height(17)
-            .fillColor('#9CA3AF')
-        }
-        .width(32)
-        .height(32)
-        .justifyContent(FlexAlign.Center)
-        .backgroundColor(this.searchHovered || this.searchPressed ? '#4B5563' : Color.Transparent)
-        .borderRadius(4)
-        .onHover((isHover: boolean) => {
-          this.searchHovered = isHover;
-        })
-        .onTouch((event: TouchEvent) => {
-          if (event.type === TouchType.Down) {
-            this.searchPressed = true;
-          } else if (event.type === TouchType.Up) {
-            this.searchPressed = false;
-            this.toggleSearch();
-          }
-        })
-
-        // 最大化图标容器
-        Row() {
-          Image($r('app.media.maximize_icon'))
-            .width(18)
-            .height(18)
-            .fillColor('#9CA3AF')
-        }
-        .width(32)
-        .height(32)
-        .justifyContent(FlexAlign.Center)
-        .backgroundColor(this.maximizeHovered || this.maximizePressed ? '#4B5563' : Color.Transparent)
-        .borderRadius(4)
-        .onHover((isHover: boolean) => {
-          this.maximizeHovered = isHover;
-        })
-        .onTouch((event: TouchEvent) => {
-          if (event.type === TouchType.Down) {
-            this.maximizePressed = true;
-          } else if (event.type === TouchType.Up) {
-            this.maximizePressed = false;
-            this.toggleMaximize();
-          }
-        })
+      // 搜索图标
+      Row() {
+        Image($r('app.media.search_icon'))
+          .width(18)
+          .height(17)
+          .fillColor('#9CA3AF')
       }
+      .width(32)
+      .height(32)
+      .justifyContent(FlexAlign.Center)
+      .backgroundColor(this.searchHovered || this.searchPressed ? '#4B5563' : Color.Transparent)
+      .borderRadius(4)
+      .onHover((isHover: boolean) => {
+        this.searchHovered = isHover;
+      })
+      .onTouch((event: TouchEvent) => {
+        if (event.type === TouchType.Down) {
+          this.searchPressed = true;
+        } else if (event.type === TouchType.Up) {
+          this.searchPressed = false;
+          this.toggleSearch();
+        }
+      })
     }
     .width('100%')
     .height(48)
@@ -169,7 +162,7 @@ struct Index {
         // default 笔记本
         this.NotebookItem('default', true, false)
 
-        // 文件列表
+        // default笔记本下的文件列表
         Column({ space: 4 }) {
           this.FileItem('Mockup Date 1', false, $r('app.color.accent_purple'))
           this.FileItem('Mockup Date 2', false, $r('app.color.accent_purple'))
@@ -315,7 +308,11 @@ struct Index {
           .fontSize(20)
           .fontColor('#9CA3AF')
           .onClick(() => {
-            router.pushUrl({ url: 'pages/UpdateNotebookLabels' });
+            try {
+              router.pushUrl({ url: 'pages/UpdateNotebookLabels' });
+            } catch (error) {
+              hilog.error(DOMAIN, 'testTag', 'Failed to navigate to UpdateNotebookLabels: %{public}s', JSON.stringify(error));
+            }
           })
       }
       .width('100%')
@@ -412,6 +409,8 @@ struct Index {
   private toggleMaximize(): void {
     this.isMaximized = !this.isMaximized;
   }
+
+
 
   aboutToAppear() {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Audio Notebook App started');
