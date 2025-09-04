@@ -1,0 +1,52 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "Audio Notebook Labels App"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "Audio Notebook Labels"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "Audio Notebook"
+    },
+    {
+      "name": "default_notebook",
+      "value": "default"
+    },
+    {
+      "name": "new_group",
+      "value": "new group"
+    },
+    {
+      "name": "mockup_date_1",
+      "value": "Mockup Date 1"
+    },
+    {
+      "name": "mockup_date_2",
+      "value": "Mockup Date 2"
+    },
+    {
+      "name": "mockup_date_3",
+      "value": "Mockup Date 3"
+    },
+    {
+      "name": "audio_track_1_duration",
+      "value": "46'"
+    },
+    {
+      "name": "audio_track_2_duration",
+      "value": "1\"25'"
+    },
+    {
+      "name": "audio_track_3_duration",
+      "value": "32'"
+    },
+    {
+      "name": "audio_track_4_duration",
+      "value": "2\"08'"
+    }
+  ]
+}
